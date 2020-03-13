@@ -9,7 +9,7 @@ import 'Control_Temperature.dart';
 
 
 //################################################################ var necessarias p conexão
-String broker = 'a';
+String broker = 'aaa';
 int port = ;
 String username = '';
 String passwd = '';

@@ -1,4 +1,3 @@
 # mqtt_teste_flutter
-Meu primeiro app  como cominucação mqtt teste usando flutter.
-Interface simples, e funções simples para testar as funcionalidades do nosso aplicativo de automação prediall.
-## Getting Started
+Meu primeiro app com cominucação mqtt teste usando flutter.
+Interface e funções simples,com objetivo de entender mqtt em dart para aplicar em nosso aplicativo de <b>automação prediall (em construção).<b>

@@ -7,17 +7,19 @@ import 'package:mqtt_kindle/Control_Temperature.dart';
 
 import 'Control_Temperature.dart';
 
-
 //################################################################ var necessarias p conexão
-String broker = 'aaa';
-int port = ;
-String username = '';
-String passwd = '';
-String clientIdentifier = '';
-String topic = '';
+String broker = 'soldier.cloudmqtt.com';
+int port = 17843;
+String username = 'efbwcvvu';
+String passwd = 'FWF3kqx3Yupz';
+String clientIdentifier = '27843';
+String topic = "temp";
 
 mqtt.MqttClient client;
 mqtt.MqttConnectionState connectionState;
+
+int ar1 = 0;
+int ar2 = 0;
 
 void main() => runApp(MyApp());
 
@@ -51,8 +53,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
-
   //################################################################
   //conecta automaticamente ao server mqtt quando inicia o app (se nao estiver conectado)
   @override
@@ -76,21 +76,33 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: <Widget>[
-          Center(
-            child: SizedBox(
-              child: Control_Temperature(),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(ar1.toString(), style: TextStyle(fontSize: 60)),
+              SizedBox(width: 100,),
+              Text(ar2.toString(), style: TextStyle(fontSize: 60)),
+            ],
           ),
-          Text(textStatus),
-          Text(_temp.toString()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: SizedBox(
+                  child: Control_Temperature(ar1, "temp-1"),
+                ),
+              ),
+              SizedBox(width: 40,),
+              Center(
+                child: SizedBox(
+                  child: Control_Temperature(ar2, "temp-2"),
+                ),
+              ),
+            ],
+          ),
+          //Text(textStatus),
+          //Text(_temp.toString()),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          PublishM(_temp.toString());
-        },
-        tooltip: 'Play',
-        child: Icon(Icons.play_arrow),
       ),
     );
   }
@@ -100,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future _connect() async {
     client = mqtt.MqttClient(broker, '');
     client.port = port;
-
 
     client.logging(on: true);
 
@@ -143,7 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
     /// notifications of published updates to each subscribed topic.
     subscription = client.updates.listen(_onMessage);
 
-    _subscribeToTopic(topic);
+    _subscribeToTopic("temp-1");
+    _subscribeToTopic("temp-2");
   }
 
   void _subscribeToTopic(String topic) {
@@ -188,20 +200,31 @@ class _MyHomePageState extends State<MyHomePage> {
     print(client.connectionState);
     print("[MQTT client] message with topic: ${event[0].topic}");
     print("[MQTT client] message with message: ${message}");
-    setState(() {
-      _temp = double.parse(message);
-    });
+    _trataMsg(event[0].topic, message);
     print("conectado");
+  }
+
+  void _trataMsg(String topic, String msg) {
+    if (topic == "temp-1") {
+      setState(() {
+        ar1 = int.parse(msg);
+      });
+    }
+    if (topic == "temp-2") {
+      setState(() {
+        ar2 = int.parse(msg);
+      });
+    }
   }
 
   //################################################################
 }
 
-void PublishM(String a) {
-  final mqtt.MqttClientPayloadBuilder builder =
-  mqtt.MqttClientPayloadBuilder();
-  builder.addString(a);
-  client.publishMessage("temp", mqtt.MqttQos.values[1], 
-  builder.payload, retain: true,
+void PublishM(String mes, String topic) {
+  final mqtt.MqttClientPayloadBuilder builder = mqtt.MqttClientPayloadBuilder();
+  builder.addString(mes);
+  client.publishMessage(topic, mqtt.MqttQos.values[1],
+    builder.payload,
+    retain: true,
   );
 }

@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_kindle/main.dart';
 
 
-class Control_Temperature extends StatefulWidget {  
-  //final int temperature;
-  //const Control_Temperature({this.temperature});
-
-
+class Control_Temperature extends StatefulWidget {
+  final int temp;
+  final String topic;
+  const Control_Temperature(this.temp, this.topic);
 
   @override
   _Control_TemperatureState createState() => _Control_TemperatureState();
 }
 
 class _Control_TemperatureState extends State<Control_Temperature> {
-  int temp = 0;
-
+  int temp;
+  String topic;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      temp = widget.temp;
+      topic = widget.topic;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +38,7 @@ class _Control_TemperatureState extends State<Control_Temperature> {
                 setState(() {
                   temp++;
                 });
-                PublishM(temp.toString());
+                PublishM(temp.toString(), topic);
               },
               child: Text("+", style: TextStyle(fontSize: 60)),
             ),
@@ -40,11 +48,11 @@ class _Control_TemperatureState extends State<Control_Temperature> {
             height: 200.0,
             child: RaisedButton(
               color: Colors.yellow,
-              onPressed: (){
+              onPressed: () {
                 setState(() {
                   temp--;
                 });
-                PublishM(temp.toString());
+                PublishM(temp.toString(), topic);
               },
               child: Text("-", style: TextStyle(fontSize: 70)),
             ),
